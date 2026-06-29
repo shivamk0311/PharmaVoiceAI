@@ -16,6 +16,7 @@ const fileFilter = (req, file, cb) => {
 
     if (ext !== '.csv'){
         cb(new Error('Only CSV files are allowed.'), false)
+        return
     }
 
     cb(null, true)

@@ -1,4 +1,4 @@
 fullName,phoneNumber,dateOfBirth,medicationName,copayAmount,hasCardOnFile
-John Smith,+18175551234,1980-03-15,Atorvastatin,12.50,true
+John Smith,+18175551234,1980-03-15,Atorvastatin,12,true
 Mary Patel,+18175556789,1975-11-22,Metformin,8.75,false
 Robert Johnson,+18175559876,1962-08-09,Lisinopril,5.00,true

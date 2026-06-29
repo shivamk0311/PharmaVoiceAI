@@ -22,11 +22,14 @@ const importPatientsFromCsv = async (filePath) => {
                         const fullName = row.fullName?.trim();
                         const phoneNumber = row.phoneNumber?.trim();
                         const dateOfBirth = row.dateOfBirth?.trim();
+                        const medicationName = row.medicationName?.trim();
+                        const copayAmount = row.copayAmount?.trim();
+                        const hasCardOnFile = row.hasCardOnFile?.trim()?.toLowerCase() === 'true';
 
-                        if(!fullName || !phoneNumber || !dateOfBirth){
+                        if(!fullName || !phoneNumber || !dateOfBirth || !medicationName || !copayAmount){
                             errors.push({
                                 row: rowNumber,
-                                reason: "Missing Full Name, Phone Number, or Date of Birth",
+                                reason: "Missing Full Name, Phone Number, Date of Birth, Medication Name, or CoPay Amount.",
                             })
                             return;
                         }
@@ -41,10 +44,23 @@ const importPatientsFromCsv = async (filePath) => {
                             return;
                         }
 
+                        const parsedCopayAmount = Number(copayAmount);
+
+                        if (isNaN(parsedCopayAmount) || parsedCopayAmount < 0){
+                            errors.push({
+                                row: rowNumber,
+                                reason: "Invalid copay amount."
+                            })
+                            return;
+                        }
+
                         validPatients.push({
                             fullName,
                             phoneNumber,
                             dateOfBirth: parsedBirthDate,
+                            medicationName,
+                            copayAmount: parsedCopayAmount,
+                            hasCardOnFile,
                         });
                     });
                     if (validPatients.length > 0) {

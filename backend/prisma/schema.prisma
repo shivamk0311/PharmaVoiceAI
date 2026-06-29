@@ -15,6 +15,10 @@ model Patient{
   phoneNumber String
   dateOfBirth DateTime
 
+  medicationName String
+  copayAmount    Decimal
+  hasCardOnFile  Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
