@@ -1,4 +1,5 @@
 const prisma = require('../lib/prisma')
+const { createOutboundCall } = require("../services/vapi.service")
 
 const startCallSession = async (patientId) => {
     
@@ -19,7 +20,41 @@ const startCallSession = async (patientId) => {
         }
     });
     
-    return session;
+    try {
+
+        const vapiCall = await createOutboundCall({
+            patient,
+            callSessionId: session.id,
+        })
+
+        const updatedSession = await prisma.callSession.update({
+            where: {
+                id: session.id,
+            },
+            data: {
+                vapiCallId: vapiCall.id,
+                status: "CALLING",
+            },
+        })
+
+        return updatedSession;
+        
+    } catch (error) {
+
+        await prisma.callSession.update({
+            where: {
+                id: session.id,
+            },
+            data: {
+                status: "FAILED",
+                needsFollowUp: true,
+                followUpReason: "Failed to start Vapi Outbound call."
+            }
+        })
+
+        throw new Error("Failed to start outbound call.")
+        
+    }
 }
 
 module.exports = {
