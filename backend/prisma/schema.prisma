@@ -19,6 +19,57 @@ model Patient{
   copayAmount    Decimal
   hasCardOnFile  Boolean @default(false)
 
+  callSessions CallSession[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+
+model CallSession{
+  id String @id @default(uuid())
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  vapiCallId String? @unique
+
+  status  CallStatus @default(PENDING)
+
+  verificationPassed Boolean @default(false)
+
+  refillConfirmed Boolean?
+
+  paymentChoice PaymentChoice?
+
+  paymentStatus PaymentStatus @default(NOT_STARTED)
+
+  transcript String?
+
+  needsFollowUp Boolean @default(false)
+
+  followUpReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum CallStatus{
+  PENDING
+  CALLING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentChoice{
+  PAYMENT_LINK
+  CARD_ON_FILE
+}
+
+enum PaymentStatus{
+  NOT_STARTED
+  LINK_SENT
+  COMPLETED
+  FAILED
 }
