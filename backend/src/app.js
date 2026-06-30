@@ -5,6 +5,7 @@ const morgan = require('morgan');
 
 const healthRoutes = require('./routes/health.routes')
 const patientsRoutes = require('./routes/patient.routes')
+const callRoutes = require('./routes/call.routes')
 const app = express();
 
 app.use(helmet())
@@ -14,5 +15,6 @@ app.use(morgan('dev'))
 
 app.use('/api/health', healthRoutes)
 app.use('/api/patients', patientsRoutes)
+app.use('/api/calls', callRoutes)
 
 module.exports = app;
