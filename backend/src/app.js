@@ -6,15 +6,17 @@ const morgan = require('morgan');
 const healthRoutes = require('./routes/health.routes')
 const patientsRoutes = require('./routes/patient.routes')
 const callRoutes = require('./routes/call.routes')
+const vapiRoutes = require('./routes/vapi.routes')
 const app = express();
 
-app.use(helmet())
-app.use(cors())
-app.use(express.json())
-app.use(morgan('dev'))
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+app.use(morgan('dev'));
 
-app.use('/api/health', healthRoutes)
-app.use('/api/patients', patientsRoutes)
-app.use('/api/calls', callRoutes)
+app.use('/api/health', healthRoutes);
+app.use('/api/patients', patientsRoutes);
+app.use('/api/calls', callRoutes);
+app.use('/api/vapi', vapiRoutes);
 
 module.exports = app;
