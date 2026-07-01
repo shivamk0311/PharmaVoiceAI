@@ -1,4 +1,4 @@
-const prisma = require("../../lib/prisma")
+const prisma = require("../../../lib/prisma")
 
 const normalizeName = (fullName) => {
     return fullName.trim().toLowerCase().replace(/\s+/g," ");

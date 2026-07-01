@@ -1,4 +1,4 @@
-const prisma = require("../lib/prisma")
+const prisma = require("../../../lib/prisma")
 
 const getAllPatients = async() => {
     const patients = prisma.patient.findMany({

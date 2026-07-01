@@ -68,8 +68,10 @@ enum PaymentChoice{
   CARD_ON_FILE
 }
 
-enum PaymentStatus{
+enum PaymentStatus {
   NOT_STARTED
+  ACTION_REQUIRED
+  LINK_REQUESTED
   LINK_SENT
   COMPLETED
   FAILED

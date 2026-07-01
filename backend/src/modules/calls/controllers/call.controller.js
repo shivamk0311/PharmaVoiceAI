@@ -13,10 +13,6 @@ const startCall = async(req, res) => {
         })
     } catch (error) {
         console.error(error);
-        console.log("Body:",req.body);
-        console.log("Params:",req.params);
-        console.log("Query:",req.query);
-
 
         return res.status(400).json({
             message: error.message,

@@ -1,4 +1,4 @@
-const { handleWebhook } = require('../integrations/vapi/vapiWebhook.service')
+const { handleWebhook } = require('../../../integrations/vapi/vapiWebhook.service')
 
 const receiveWebhook = async (req, res) => {
     try {

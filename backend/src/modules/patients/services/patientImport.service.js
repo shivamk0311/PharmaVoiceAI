@@ -1,6 +1,6 @@
 const fs = require("fs")
 const csv = require("csv-parser")
-const prisma = require('../lib/prisma')
+const prisma = require('../../../lib/prisma')
 
 const importPatientsFromCsv = async (filePath) => {
     const rows = []
