@@ -7,6 +7,7 @@ const healthRoutes = require('./routes/health.routes')
 const patientsRoutes = require('./routes/patient.routes')
 const callRoutes = require('./routes/call.routes')
 const vapiRoutes = require('./routes/vapi.routes')
+const toolRoutes = require('./tools/routes/tool.routes')
 const app = express();
 
 app.use(helmet());
@@ -18,5 +19,6 @@ app.use('/api/health', healthRoutes);
 app.use('/api/patients', patientsRoutes);
 app.use('/api/calls', callRoutes);
 app.use('/api/vapi', vapiRoutes);
+app.use('/api/tools', toolRoutes);
 
 module.exports = app;
