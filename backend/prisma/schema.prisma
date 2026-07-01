@@ -36,6 +36,7 @@ model CallSession{
   vapiCallId String? @unique
 
   status  CallStatus @default(PENDING)
+  conversationState    ConversationState @default(GREETING)
 
   verificationPassed Boolean @default(false)
 
@@ -72,4 +73,15 @@ enum PaymentStatus{
   LINK_SENT
   COMPLETED
   FAILED
+}
+
+enum ConversationState {
+  GREETING
+  VERIFY_NAME
+  VERIFY_DOB
+  REFILL_DISCUSSION
+  PAYMENT_SELECTION
+  PAYMENT_PROCESSING
+  FOLLOW_UP
+  COMPLETED
 }

@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "ConversationState" AS ENUM ('GREETING', 'VERIFY_NAME', 'VERIFY_DOB', 'REFILL_DISCUSSION', 'PAYMENT_SELECTION', 'PAYMENT_PROCESSING', 'FOLLOW_UP', 'COMPLETED');
+
+-- AlterTable
+ALTER TABLE "CallSession" ADD COLUMN     "conversationState" "ConversationState" NOT NULL DEFAULT 'GREETING';
