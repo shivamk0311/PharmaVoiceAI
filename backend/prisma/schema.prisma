@@ -70,7 +70,7 @@ enum PaymentChoice{
 
 enum PaymentStatus {
   NOT_STARTED
-  ACTION_REQUIRED
+  PENDING_STAFF_ACTION
   LINK_REQUESTED
   LINK_SENT
   COMPLETED
