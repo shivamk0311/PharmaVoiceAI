@@ -61,7 +61,7 @@ const verifyPatientTool = async ({callSessionId, fullName, dateOfBirth}) => {
             copayAmount: callSession.patient.copayAmount,
             hasCardOnFile: callSession.patient.hasCardOnFile,
             nextState: "REFILL_DISCUSSION",
-            message: "Patient verified succeefully."
+            message: "Patient verified successfully."
         }
     };
 
@@ -88,4 +88,4 @@ const verifyPatientTool = async ({callSessionId, fullName, dateOfBirth}) => {
 
 module.exports = {
     verifyPatientTool,
-};
+}

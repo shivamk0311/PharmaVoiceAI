@@ -1,5 +1,5 @@
 const prisma = require('../lib/prisma')
-const { createOutboundCall } = require("../services/vapi.service")
+const { createOutboundCall } = require("../integrations/vapi/vapi.service")
 
 const startCallSession = async (patientId) => {
     
