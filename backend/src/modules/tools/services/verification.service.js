@@ -1,4 +1,6 @@
 const prisma = require("../../../lib/prisma")
+const { getCallSessionByVapiCallId } = require("./toolSession.service");
+
 
 const normalizeName = (fullName) => {
     return fullName.trim().toLowerCase().replace(/\s+/g," ");
@@ -14,23 +16,16 @@ const normalizeDOB = (dateOfBirth) => {
     return date.toISOString().slice(0,10);
 }
 
-const verifyPatientTool = async ({callSessionId, fullName, dateOfBirth}) => {
+const verifyPatientTool = async ({callId, fullName, dateOfBirth}) => {
 
-    const callSession = await prisma.callSession.findUnique({
-        where: {
-            id: callSessionId,
-        },
-        include: {
-            patient: true,
-        }
-    });
+    const callSession = await getCallSessionByVapiCallId(callId);
 
-    if(!callSession){
+    if (!callSession) {
         return {
-            success: false,
-            verified: false,
-            message: "Call Session not found."
-        }
+        success: false,
+        verified: false,
+        message: "Call session not found for this Vapi call.",
+        };
     }
 
     const providedName = normalizeName(fullName);
@@ -45,7 +40,7 @@ const verifyPatientTool = async ({callSessionId, fullName, dateOfBirth}) => {
     if(nameMatches && dobMatches){
         await prisma.callSession.update({
             where: {
-                id: callSessionId,
+                id: callSession.id,
             },
             data: {
                 verificationPassed: true,
@@ -67,7 +62,7 @@ const verifyPatientTool = async ({callSessionId, fullName, dateOfBirth}) => {
 
     await prisma.callSession.update({
         where: {
-            id: callSessionId,
+            id: callSession.id,
         },
         data: {
             verificationPassed: false,

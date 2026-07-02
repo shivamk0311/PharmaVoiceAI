@@ -1,22 +1,17 @@
 const prisma = require('../../../lib/prisma');
+const { getCallSessionByVapiCallId } = require("./toolSession.service");
 
-const confirmRefillTool = async ({callSessionId, confirmed}) => {
 
-    const callSession = await prisma.callSession.findUnique({
-        where: {
-            id: callSessionId,
-        },
-        include: {
-            patient: true,
-        }
-    });
+const confirmRefillTool = async ({callId, confirmed}) => {
 
-    if(!callSession){
-        return {
+    const callSession = await getCallSessionByVapiCallId(callId);
+
+    if (!callSession) {
+            return {
             success: false,
             verified: false,
-            message: "Call Session not found."
-        }
+            message: "Call session not found for this Vapi call.",
+            };
     }
 
     if (!callSession.verificationPassed) {
@@ -29,7 +24,7 @@ const confirmRefillTool = async ({callSessionId, confirmed}) => {
     if(confirmed){
         await prisma.callSession.update({
             where: {
-                id: callSessionId,
+                id: callSession.id,
             },
             data: {
                 refillConfirmed: true,
@@ -57,7 +52,7 @@ const confirmRefillTool = async ({callSessionId, confirmed}) => {
 
     await prisma.callSession.update({
         where: {
-            id: callSessionId,
+            id: callSession.id,
         },
         data: {
             refillConfirmed: false,

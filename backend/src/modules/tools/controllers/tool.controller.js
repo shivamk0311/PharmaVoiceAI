@@ -4,16 +4,16 @@ const { recordPaymentPreferenceTool } = require("../services/payment.service");
 
 const verifyPatient = async (req, res) => {
     try {
-        const { callSessionId, fullName, dateOfBirth } = req.body;
+        const { callId, fullName, dateOfBirth } = req.body;
 
-        if(!callSessionId || !fullName || !dateOfBirth){
+        if(!callId || !fullName || !dateOfBirth){
             return res.status(400).json({
                 success: false,
                 message : "Call session Id, Full name and Date of birth are required."
             });
         }
 
-        const result = await verifyPatientTool({callSessionId, fullName, dateOfBirth});
+        const result = await verifyPatientTool({callId, fullName, dateOfBirth});
 
         return res.status(200).json(result);
 
@@ -31,16 +31,16 @@ const verifyPatient = async (req, res) => {
 const confirmRefill = async (req, res) => {
     try {
         
-        const { callSessionId, confirmed } = req.body;
+        const { callId, confirmed } = req.body;
 
-        if(!callSessionId || typeof(confirmed) != "boolean"){
+        if(!callId || typeof(confirmed) != "boolean"){
             return res.status(400).json({
                 success: false,
                 message: "Call Session Id and confirmed boolean required.",
             });
         };
 
-        const result = await confirmRefillTool({ callSessionId, confirmed });
+        const result = await confirmRefillTool({ callId, confirmed });
 
         return res.status(200).json(result);
 
@@ -56,17 +56,17 @@ const confirmRefill = async (req, res) => {
 
 const recordPaymentPreference = async (req, res) => {
   try {
-    const { callSessionId, paymentChoice } = req.body;
+    const { callId, paymentChoice } = req.body;
 
-    if (!callSessionId || !paymentChoice) {
+    if (!callId || !paymentChoice) {
       return res.status(400).json({
         success: false,
-        message: "callSessionId and paymentChoice are required.",
+        message: "callId and paymentChoice are required.",
       });
     }
 
     const result = await recordPaymentPreferenceTool({
-      callSessionId,
+      callId,
       paymentChoice,
     });
 

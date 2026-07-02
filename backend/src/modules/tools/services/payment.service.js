@@ -1,21 +1,17 @@
 const prisma = require("../../../lib/prisma");
+const { getCallSessionByVapiCallId } = require('../services/toolSession.service')
 
-const recordPaymentPreferenceTool = async ({ callSessionId, paymentChoice }) => {
-  const callSession = await prisma.callSession.findUnique({
-    where: {
-      id: callSessionId,
-    },
-    include: {
-      patient: true,
-    },
-  });
+const recordPaymentPreferenceTool = async ({ callId, paymentChoice }) => {
+    
+    const callSession = await getCallSessionByVapiCallId(callId);
 
-  if (!callSession) {
-    return {
-      success: false,
-      message: "Call session not found.",
-    };
-  }
+    if (!callSession) {
+        return {
+        success: false,
+        verified: false,
+        message: "Call session not found for this Vapi call.",
+        };
+    }
 
   if (!callSession.verificationPassed) {
     return {
@@ -54,7 +50,7 @@ const recordPaymentPreferenceTool = async ({ callSessionId, paymentChoice }) => 
 
   const updatedSession = await prisma.callSession.update({
     where: {
-      id: callSessionId,
+      id: callSession.id,
     },
     data: {
       paymentChoice,
