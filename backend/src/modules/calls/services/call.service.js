@@ -58,6 +58,20 @@ const startCallSession = async (patientId) => {
     }
 }
 
+const getAllCallSessions = async () => {
+    const sessions = await prisma.callSession.findMany({
+        orderBy: {
+        createdAt: "desc",
+        },
+        include: {
+        patient: true,
+        },
+    });
+
+    return sessions;
+}
+
 module.exports = {
     startCallSession,
+    getAllCallSessions,
 }
