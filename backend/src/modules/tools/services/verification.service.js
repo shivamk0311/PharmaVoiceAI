@@ -2,11 +2,20 @@ const prisma = require("../../../lib/prisma")
 const { getCallSessionByVapiCallId } = require("./toolSession.service");
 
 
-const normalizeName = (fullName) => {
-    return fullName.trim().toLowerCase().replace(/\s+/g," ");
-};
-
 const normalizeDOB = (dateOfBirth) => {
+
+    if (!dateOfBirth) return null;
+
+    const value = String(dateOfBirth).trim();
+
+    // MMDDYYYY from keypad, example 03151980
+    if (/^\d{8}$/.test(value)) {
+        const month = value.slice(0, 2);
+        const day = value.slice(2, 4);
+        const year = value.slice(4, 8);
+        return `${year}-${month}-${day}`;
+    }
+
     const date = new Date(dateOfBirth)
 
     if(Number.isNaN(date.getTime())){
@@ -16,7 +25,7 @@ const normalizeDOB = (dateOfBirth) => {
     return date.toISOString().slice(0,10);
 }
 
-const verifyPatientTool = async ({callId, fullName, dateOfBirth}) => {
+const verifyPatientTool = async ({callId, dateOfBirth}) => {
 
     const callSession = await getCallSessionByVapiCallId(callId);
 
@@ -28,16 +37,12 @@ const verifyPatientTool = async ({callId, fullName, dateOfBirth}) => {
         };
     }
 
-    const providedName = normalizeName(fullName);
-    const storedName = normalizeName(callSession.patient.fullName);
-
     const providedDOB = normalizeDOB(dateOfBirth);
     const storedDOB = normalizeDOB(callSession.patient.dateOfBirth);
 
-    const nameMatches = providedName === storedName;
     const dobMatches = providedDOB === storedDOB;
 
-    if(nameMatches && dobMatches){
+    if(dobMatches){
         await prisma.callSession.update({
             where: {
                 id: callSession.id,

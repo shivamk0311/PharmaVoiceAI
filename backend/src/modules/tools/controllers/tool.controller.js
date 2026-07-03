@@ -1,6 +1,7 @@
 const { verifyPatientTool } = require("../services/verification.service")
 const { confirmRefillTool } = require("../services/refill.service")
 const { recordPaymentPreferenceTool } = require("../services/payment.service");
+const { recordFulfillmentChoiceTool } = require("../services/fulfillment.service");
 
 
 
@@ -50,21 +51,19 @@ const verifyPatient = async (req, res) => {
 
         const extracted = extractVapiToolCall(req);
 
-        console.log("Extracted:", extracted);
-
-        const { fullName, dateOfBirth } = extracted.args;
+        const { dateOfBirth } = extracted.args;
         const callId = extracted.callId;
 
         // const { callId, fullName, dateOfBirth } = req.body;
 
-        if(!callId || !fullName || !dateOfBirth){
-            return res.status(400).json({
+        if(!callId || !dateOfBirth){
+            return sendToolResponse(res, extracted,{
                 success: false,
-                message : "Call session Id, Full name and Date of birth are required."
+                message : "Call Id and Date of birth are required."
             });
         }
 
-        const result = await verifyPatientTool({callId, fullName, dateOfBirth});
+        const result = await verifyPatientTool({callId, dateOfBirth});
         console.log("Result:", result);
 
         return sendToolResponse(res, extracted, result);
@@ -93,7 +92,7 @@ const confirmRefill = async (req, res) => {
         const callId = extracted.callId;
 
         if(!callId || typeof(confirmed) != "boolean"){
-            return res.status(400).json({
+            return sendToolResponse(res, extracted,{
                 success: false,
                 message: "Call Session Id and confirmed boolean required.",
             });
@@ -117,7 +116,7 @@ const confirmRefill = async (req, res) => {
 const recordPaymentPreference = async (req, res) => {
   try {
 
-    console.log("CONFIRM REFILL TOOL BODY:", JSON.stringify(req.body, null, 2));
+    console.log("PAYMENT PREFERENCE TOOL BODY:", JSON.stringify(req.body, null, 2));
 
     const extracted = extractVapiToolCall(req);
     const { paymentChoice } = extracted.args;
@@ -126,7 +125,7 @@ const recordPaymentPreference = async (req, res) => {
     // const { callId, paymentChoice } = req.body;
 
     if (!callId || !paymentChoice) {
-      return res.status(400).json({
+      return sendToolResponse(res, extracted,{
         success: false,
         message: "callId and paymentChoice are required.",
       });
@@ -150,8 +149,43 @@ const recordPaymentPreference = async (req, res) => {
   }
 };
 
+const recordFulfillmentChoice = async (req, res) => {
+    try {
+
+    console.log("FULFILLMENT CHOICE TOOL BODY:", JSON.stringify(req.body, null, 2));
+
+    const extracted = extractVapiToolCall(req);
+    const { fulfillmentChoice, deliveryAddress } = extracted.args;
+    const callId = extracted.callId;
+
+    if (!callId || !fulfillmentChoice) {
+      return sendToolResponse(res, extracted,{
+        success: false,
+        message: "callId and fulfillmentChoice are required.",
+      });
+    }
+
+    const result = await recordFulfillmentChoiceTool({
+      callId,
+      fulfillmentChoice,
+      deliveryAddress,
+    });
+
+    return sendToolResponse(res, extracted, result);
+
+  } catch (error) {
+    console.error("FulFillment Choice Tool error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to record fulfillment choice.",
+    });
+  }
+}
+
 module.exports = {
     verifyPatient,
     confirmRefill,
     recordPaymentPreference,
+    recordFulfillmentChoice,
 };

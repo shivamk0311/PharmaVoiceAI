@@ -40,6 +40,7 @@ const startCallSession = async (patientId) => {
         return updatedSession;
         
     } catch (error) {
+        console.error("Vapi call error:", error.response?.data || error.message);
 
         await prisma.callSession.update({
             where: {

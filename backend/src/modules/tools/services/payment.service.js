@@ -55,7 +55,7 @@ const recordPaymentPreferenceTool = async ({ callId, paymentChoice }) => {
     data: {
       paymentChoice,
       paymentStatus: "PENDING_STAFF_ACTION",
-      conversationState: "COMPLETED",
+      conversationState: "FULFILLMENT_CHOICE",
     },
   });
 
@@ -68,8 +68,8 @@ const recordPaymentPreferenceTool = async ({ callId, paymentChoice }) => {
     copayAmount: callSession.patient.copayAmount,
     message:
       paymentChoice === "CARD_ON_FILE"
-        ? "Patient requested to use the card on file. Inform the patient that pharmacy staff will process it."
-        : "Patient requested a payment link. Inform the patient that pharmacy staff will send the payment link.",
+        ? "Payment preference recorded. Inform patient the pharmacy staff will process the payment. Now ask the patient whether they want pickup from the pharmacy or home delivery."
+        : "Patient requested a payment link. Inform the patient that pharmacy staff will send the payment link. Now ask the patient whether they want pickup from the pharmacy or home delivery.",
   };
 };
 
