@@ -25,6 +25,7 @@ model Patient{
   hasCardOnFile  Boolean @default(false)
 
   callSessions CallSession[]
+  campaignPatients CampaignPatient[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -60,8 +61,45 @@ model CallSession{
 
   followUpReason String?
 
+  staffCompleted        Boolean   @default(false)
+
+  staffCompletedAt      DateTime?
+
+  staffCompletedBy      String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Campaign {
+  id          String   @id @default(uuid())
+  name        String
+  status      CampaignStatus @default(DRAFT)
+
+  patients    CampaignPatient[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CampaignPatient {
+  id          String   @id @default(uuid())
+
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id])
+
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+
+  createdAt   DateTime @default(now())
+
+  @@unique([campaignId, patientId])
+}
+
+enum CampaignStatus {
+  DRAFT
+  RUNNING
+  COMPLETED
 }
 
 enum CallStatus{

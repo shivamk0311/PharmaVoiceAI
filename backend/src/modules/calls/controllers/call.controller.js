@@ -1,4 +1,4 @@
-const {startCallSession, getAllCallSessions} = require("../services/call.service")
+const {startCallSession, getAllCallSessions, updateCallSessions} = require("../services/call.service")
 
 const startCall = async(req, res) => {
     try {
@@ -41,7 +41,26 @@ const getCalls = async (req, res) => {
     }
 }
 
+const updateCall = async (req, res) => {
+    try {
+        const {callId} = req.params;
+
+        const session = await updateCallSessions(callId);
+        return res.status(201).json({
+            message: "Call Session updated.",
+            session,
+        })
+    } catch (error) {
+        console.error(error);
+
+        return res.status(400).json({
+            message: error.message,
+        })
+    }
+}
+
 module.exports = {
     startCall,
-    getCalls
+    getCalls,
+    updateCall
 }

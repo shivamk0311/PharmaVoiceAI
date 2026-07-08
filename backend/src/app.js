@@ -8,13 +8,14 @@ const patientRoutes = require("./modules/patients/routes/patient.routes");
 const callRoutes = require("./modules/calls/routes/call.routes");
 const vapiRoutes = require("./modules/calls/routes/vapi.routes");
 const toolRoutes = require("./modules/tools/routes/tool.routes");
+const campaignRoutes = require("./modules/campaigns/routes/campaign.routes");
 const app = express();
 
 app.use(helmet());
 app.use(
   cors({
     origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT","PATCH","DELETE"],
     credentials: true,
   })
 );
@@ -26,5 +27,7 @@ app.use('/api/patients', patientRoutes);
 app.use('/api/calls', callRoutes);
 app.use('/api/vapi', vapiRoutes);
 app.use('/api/tools', toolRoutes);
+app.use('/api/campaigns', campaignRoutes);
+
 
 module.exports = app;

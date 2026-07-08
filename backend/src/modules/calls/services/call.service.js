@@ -71,7 +71,21 @@ const getAllCallSessions = async () => {
     return sessions;
 }
 
+const updateCallSessions = async (callSessionId) => {
+    const sessions = await prisma.callSession.update({
+        where: { id: callSessionId },
+        data: {
+            staffCompleted: true,
+            staffCompletedAt: new Date(),
+            staffCompletedBy: "Pharmacy Staff",
+        },
+    });
+
+    return sessions;
+}
+
 module.exports = {
     startCallSession,
     getAllCallSessions,
+    updateCallSessions,
 }
