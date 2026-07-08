@@ -6,17 +6,15 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import StaffActions from "./StaffActions";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 import {
   Phone,
   Pill,
   DollarSign,
   MapPin,
-  CreditCard,
-  CheckCircle2,
   AlertTriangle,
   ClipboardCheck,
 } from "lucide-react";
@@ -32,14 +30,14 @@ function pretty(value) {
     .replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
-export default function CallDetailsSheet({ open, onOpenChange, call }) {
+export default function CallDetailsSheet({ open, onOpenChange, call, refresh }) {
   if (!call) return null;
 
   const patient = call.patient;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
+      <SheetContent className="px-4 w-full overflow-y-auto sm:max-w-xl">
         <SheetHeader>
           <SheetTitle className="text-2xl">{patient.fullName}</SheetTitle>
           <p className="text-sm text-muted-foreground">
@@ -112,33 +110,7 @@ export default function CallDetailsSheet({ open, onOpenChange, call }) {
           )}
 
           <InfoCard title="Manual Staff Actions">
-            <div className="grid gap-3">
-              {call.paymentChoice === "PAYMENT_LINK" && (
-                <Button variant="outline" className="justify-start">
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Send Payment Link
-                </Button>
-              )}
-
-              {call.paymentChoice === "CARD_ON_FILE" && (
-                <Button variant="outline" className="justify-start">
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Charge Card on File
-                </Button>
-              )}
-
-              {call.fulfillmentChoice === "DELIVERY" && (
-                <Button variant="outline" className="justify-start">
-                  <MapPin className="mr-2 h-4 w-4" />
-                  Schedule Delivery
-                </Button>
-              )}
-
-              <Button className="justify-start">
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                Mark Staff Action Complete
-              </Button>
-            </div>
+            <StaffActions call={call} onCompleted={refresh} />
           </InfoCard>
 
           <InfoCard title="Transcript">

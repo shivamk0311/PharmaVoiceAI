@@ -89,6 +89,7 @@ export default function Home() {
           call={selectedCall}
           open={sheetOpen}
           onOpenChange={setSheetOpen}
+          refresh={refresh}
         />
 
         <footer className="mt-16 border-t pt-6 text-center text-sm text-muted-foreground">
