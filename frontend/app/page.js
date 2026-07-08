@@ -1,114 +1,100 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
-const API_BASE_URL = "http://localhost:5001";
+import { useCalls } from "@/hooks/useCalls";
+
+import Header from "@/components/layout/Header";
+import DashboardStats from "@/components/dashboard/DashboardStats";
+import FilterBar from "@/components/dashboard/FilterBar";
+import CallsGrid from "@/components/dashboard/CallsGrid";
+import CallDetailsSheet from "@/components/call/CallDetailsSheet";
 
 export default function Home() {
-  const [calls, setCalls] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { calls, loading, refresh, lastUpdated } = useCalls();
 
-  const fetchCalls = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/calls`);
-      const data = await res.json();
-      setCalls(data.calls || []);
-    } catch (error) {
-      console.error("Failed to fetch calls:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [selectedCall, setSelectedCall] = useState(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
-  useEffect(() => {
-    fetchCalls();
-  }, []);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("ALL");
+
+  const filteredCalls = useMemo(() => {
+    return calls.filter((call) => {
+      const patient = call.patient || {};
+
+      const query = search.toLowerCase();
+
+      const matchesSearch =
+        patient.fullName?.toLowerCase().includes(query) ||
+        patient.phoneNumber?.includes(search) ||
+        patient.medicationName?.toLowerCase().includes(query);
+
+      let matchesStatus = true;
+
+      switch (status) {
+        case "VERIFIED":
+          matchesStatus = call.verificationPassed;
+          break;
+
+        case "COMPLETED":
+          matchesStatus = call.conversationState === "COMPLETED";
+          break;
+
+        case "FOLLOWUP":
+          matchesStatus = call.needsFollowUp;
+          break;
+
+        case "PENDING":
+          matchesStatus = call.conversationState !== "COMPLETED";
+          break;
+
+        default:
+          matchesStatus = true;
+      }
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [calls, search, status]);
 
   return (
-    <main className="min-h-screen bg-gray-100 p-8">
-      <div className="mx-auto max-w-7xl">
-        <h1 className="text-3xl font-bold text-gray-900">
-          PharmaVoice AI Dashboard
-        </h1>
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-screen-2xl px-10 py-10">
+        <Header
+          refresh={refresh}
+          lastUpdated={lastUpdated}
+          loading={loading}
+        />
 
-        <p className="mt-2 text-gray-600">
-          Review AI call outcomes and pharmacy staff follow-up actions.
-        </p>
+        <DashboardStats calls={calls} />
 
-        <div className="mt-8 rounded-xl bg-white shadow">
-          <div className="border-b p-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Call Sessions
-            </h2>
-          </div>
+        <FilterBar
+          search={search}
+          setSearch={setSearch}
+          status={status}
+          setStatus={setStatus}
+          refresh={refresh}
+        />
 
-          {loading ? (
-            <p className="p-4 text-gray-600">Loading calls...</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-gray-50 text-gray-700">
-                  <tr>
-                    <th className="px-4 py-3">Patient</th>
-                    <th className="px-4 py-3">Phone</th>
-                    <th className="px-4 py-3">Medication</th>
-                    <th className="px-4 py-3">Copay</th>
-                    <th className="px-4 py-3">Call Status</th>
-                    <th className="px-4 py-3">Verified</th>
-                    <th className="px-4 py-3">Refill</th>
-                    <th className="px-4 py-3">Payment</th>
-                    <th className="px-4 py-3">Fulfillment</th>
-                    <th className="px-4 py-3">Follow-up</th>
-                  </tr>
-                </thead>
+        <CallsGrid
+          calls={filteredCalls}
+          loading={loading}
+          onSelectCall={(call) => {
+            setSelectedCall(call);
+            setSheetOpen(true);
+          }}
+        />
 
-                <tbody className="divide-y">
-                  {calls.map((call) => (
-                    <tr key={call.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium text-gray-900">
-                        {call.patient?.fullName}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {call.patient?.phoneNumber}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {call.patient?.medicationName}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        ${call.patient?.copayAmount}
-                      </td>
-                      <td className="px-4 py-3">{call.status}</td>
-                      <td className="px-4 py-3">
-                        {call.verificationPassed ? "✅" : "❌"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {call.refillConfirmed === true
-                          ? "Confirmed"
-                          : call.refillConfirmed === false
-                          ? "Declined"
-                          : "Pending"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {call.paymentChoice || "Pending"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {call.fulfillmentChoice || "Pending"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {call.needsFollowUp ? "⚠️ Yes" : "No"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <CallDetailsSheet
+          call={selectedCall}
+          open={sheetOpen}
+          onOpenChange={setSheetOpen}
+        />
 
-              {calls.length === 0 && (
-                <p className="p-4 text-gray-600">No calls found.</p>
-              )}
-            </div>
-          )}
-        </div>
+        <footer className="mt-16 border-t pt-6 text-center text-sm text-muted-foreground">
+          PharmaVoice AI v1.0 · Built with Next.js, Express, Prisma, and Vapi
+        </footer>
       </div>
-    </main>
+    </div>
   );
 }
